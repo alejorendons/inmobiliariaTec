@@ -1,0 +1,50 @@
+<%- include('partials/_headers') %>
+<div class="container">
+    <h2>Inventario de Bienes de <%= famous.name %></h2>
+    <h3>Nacionalidad: <%= famous.nationality %></h3>
+    <h3>Fecha de Nacimiento: <%= new Date(famous.birthDate).toLocaleDateString() %></h3>
+    <h3>Total de Impuestos Pagados: $<%= totalTaxes %></h3>
+
+    <h3>Propiedades:</h3>
+    <div class="row">
+        <% properties.forEach(property => { %>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= property.type %> en <%= property.location.city %></h5>
+                        <p class="card-text"><strong>Dirección:</strong> <%= property.location.address %></p>
+                        <p class="card-text"><strong>País:</strong> <%= property.location.country %></p>
+                        <p class="card-text"><strong>Descripción:</strong> <%= property.description %></p>
+                        <p class="card-text"><strong>Precio Estimado:</strong> $<%= property.estimatedPrice %></p>
+                        <p class="card-text"><strong>En Venta:</strong> <%= property.forSale ? 'Sí' : 'No' %></p>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <h3>Transacciones:</h3>
+    <div class="row">
+        <% transactions.forEach(transaction => { %>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Transacción: <%= transaction.type %></h5>
+                        <p class="card-text"><strong>Propiedad:</strong> <%= transaction.property.type %> en <%= transaction.property.location.city %></p>
+                        <p class="card-text"><strong>Dirección:</strong> <%= transaction.property.location.address %></p>
+                        <p class="card-text"><strong>País:</strong> <%= transaction.property.location.country %></p>
+                        <p class="card-text"><strong>Precio de Venta:</strong> $<%= transaction.salePrice %> <%= transaction.currency %></p>
+                        <p class="card-text"><strong>Comprador:</strong> <%= transaction.buyer.username %></p>
+                        <p class="card-text"><strong>Vendedor:</strong> <%= transaction.seller.username %></p>
+                        <p class="card-text"><strong>Banco:</strong> <%= transaction.bankId.name %></p>
+                        <p class="card-text"><strong>Comisión:</strong> $<%= transaction.commission %></p>
+                        <p class="card-text"><strong>Impuestos:</strong> $<%= transaction.taxes %></p>
+                        <p class="card-text"><strong>Fecha de Transacción:</strong> <%= new Date(transaction.date).toLocaleDateString() %></p>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+<%- include('partials/_footer') %>
+

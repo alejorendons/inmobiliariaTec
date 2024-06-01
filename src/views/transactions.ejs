@@ -1,0 +1,39 @@
+<%- include('partials/_headers') %>
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Transacciones de Propiedades</h1>
+    <% if (transactions.length > 0) { %>
+        <% transactions.forEach(transaction => { %>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title"><%= transaction.type %></h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Detalles de la Transacción</h6>
+                    <p class="card-text"><strong>Propiedad:</strong> <%= transaction.property.location.address %>, <%= transaction.property.location.city %>, <%= transaction.property.location.country %></p>
+                    <p class="card-text"><strong>Comprador:</strong> <%= transaction.buyer.username %></p>
+                    <p class="card-text"><strong>Vendedor:</strong> <%= transaction.seller.username %></p>
+                    <% if (transaction.bankId) { %>
+                        <p class="card-text"><strong>Banco:</strong> <%= transaction.bankId.name %></p>
+                    <% } else { %>
+                        <p class="card-text text-danger"><strong>Banco:</strong> No disponible</p>
+                    <% } %>
+                    <p class="card-text"><strong>Comisión:</strong> $<%= transaction.commission %></p>
+                    <p class="card-text"><strong>Impuestos:</strong> $<%= transaction.taxes %></p>
+                    <p class="card-text"><strong>Multa:</strong> $<%= transaction.fines %></p>
+                    <p class="card-text"><strong>Total:</strong> $<%= transaction.salePrice %></p>
+                    <p class="card-text"><strong>Moneda:</strong> <%= transaction.currency %></p>
+                    <p class="card-text"><strong>Fecha:</strong> <%= transaction.date.toLocaleDateString() %></p>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="alert alert-info text-center" role="alert">
+            No hay transacciones registradas.
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/_footer') %>
+
+

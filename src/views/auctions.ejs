@@ -1,0 +1,33 @@
+<%- include('partials/_headers') %>
+<div class="container">
+    <h2>Subastas</h2>
+    <div class="row">
+        <% auctions.forEach(auction => { %>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= auction.property.type %> en <%= auction.property.location.city %></h5>
+                        <p class="card-text"><strong>Dirección:</strong> <%= auction.property.location.address %></p>
+                        <p class="card-text"><strong>País:</strong> <%= auction.property.location.country %></p>
+                        <p class="card-text"><strong>Descripción:</strong> <%= auction.property.description %></p>
+                        <p class="card-text"><strong>Precio Inicial:</strong> $<%= auction.startPrice %></p>
+                        <p class="card-text"><strong>Oferta Actual:</strong> $<%= auction.currentBid %></p>
+                        <p class="card-text"><strong>Mayor Oferente:</strong> <%= auction.highestBidder ? auction.highestBidder.username : 'Ninguno' %></p>
+                        <form action="/bid/<%= auction._id %>" method="post">
+                            <div class="form-group">
+                                <label for="bidderId">ID del Oferente:</label>
+                                <input type="text" class="form-control" id="bidderId" name="bidderId" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bidAmount">Cantidad de la Oferta:</label>
+                                <input type="number" class="form-control" id="bidAmount" name="bidAmount" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Ofertar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+<%- include('partials/_footer') %>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous" />
+  <title>Inmobiliaria de Famosos - Login</title>
+</head>
+<body>
+  <div class="container justify-content-center d-flex">
+    <div class="card my-5 w-50">
+      <div class="card-header text-center">
+        <h5>Iniciar Sesión en Inmobiliaria de Famosos</h5>
+        <strong class="<%= usuarioExists ? 'd-block' : 'd-none'%> text-danger">
+          El usuario ya existe, por favor inicie sesión
+        </strong>
+        <strong class="<%= logeoInvalido ? 'd-block' : 'd-none'%> text-danger">
+          Usuario y/o contraseña inválidos
+        </strong>
+      </div>
+      <div class="card-body">
+        <form action="/login" class="text-center mx-5" method="post">
+          <div class="form-group">
+            <label for="username">Nombre de usuario</label>
+            <input type="text" class="form-control" name="username" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" class="form-control" name="password" required />
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-success w-100">Iniciar Sesión</button>
+          </div>
+        </form>
+        <div class="col text-center">
+          <a href="/register"><i>¿Aún no tienes cuenta? Regístrate</i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
