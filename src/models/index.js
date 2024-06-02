@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const famousSchema = new Schema({
   name: { type: String, required: true },
   nationality: { type: String, required: true },
-  birthDate: { type: Date, required: true }
+  birthDate: { type: Date },
+  properties: [{ type: Schema.Types.ObjectId, ref: 'Property' }] // Referencia a Propiedades
 });
 
 // Esquema para Usuarios

@@ -28,8 +28,6 @@ router.get("/register", (req, res) => {
     res.render("register");
 });
 
-
-
 // Mostrar el formulario de agregar famoso
 router.get("/addFamous", (req, res) => {
     res.render("addFamous");
@@ -48,21 +46,19 @@ router.post("/addFamous", async (req, res) => {
     }
 });
 
-
 // Mostrar propiedades
 router.get("/properties", async (req, res) => {
     try {
         const properties = await Property.find().populate('owner');
         const users = await User.find(); // Obtener todos los usuarios
+        const famous = await Famous.find();
 
-        res.render("properties", { properties, users });
+        res.render("properties", { properties, users, famous });
     } catch (error) {
         console.error("Error fetching properties:", error);
         res.status(500).send("Error al obtener las propiedades");
     }
 });
-
-
 
 // Mostrar transacciones
 router.get("/transactions", async (req, res) => {
@@ -79,8 +75,6 @@ router.get("/transactions", async (req, res) => {
         res.status(500).send("Error al obtener las transacciones");
     }
 });
-
-
 
 // Mostrar subastas
 router.get("/auctions", async (req, res) => {
@@ -151,21 +145,35 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// Mostrar formulario para agregar propiedad
+// Mostrar el formulario de agregar propiedad
 router.get("/addProperty", async (req, res) => {
     try {
         const users = await User.find();
-        res.render("addProperty", { users });
+        const famous = await Famous.find();
+        res.render("addProperty", { users, famous }); // Pasar los usuarios y famosos a la vista
     } catch (error) {
-        console.error("Error fetching users:", error);
-        res.status(500).send("Error al obtener los usuarios");
+        console.error("Error fetching users and famous people:", error);
+        res.status(500).send("Error al obtener los usuarios y famosos");
     }
 });
 
 // Agregar propiedad
 router.post("/addProperty", async (req, res) => {
     try {
-        const { type, address, city, country, description, estimatedPrice, ownerId } = req.body;
+        const { type, address, city, country, description, estimatedPrice, ownerId, ownerType } = req.body;
+        
+        // Verificar si el propietario es un usuario o un famoso
+        let owner = null;
+        if (ownerType === 'User') {
+            owner = await User.findById(ownerId);
+        } else if (ownerType === 'Famous') {
+            owner = await Famous.findById(ownerId);
+        }
+
+        if (!owner) {
+            return res.status(404).send("Propietario no encontrado");
+        }
+
         let property = new Property({
             type,
             location: {
@@ -185,14 +193,13 @@ router.post("/addProperty", async (req, res) => {
     }
 });
 
-
 // Registrar una nueva transacción
 router.post("/newTransaction", async (req, res) => {
     try {
         const { type, propertyId, salePrice, buyerId, sellerId, bankId, currency, hasPenalty } = req.body;
 
-        const buyer = await User.findById(buyerId);
-        const seller = await User.findById(sellerId);
+        const buyer = await User.findById(buyerId) || await Famous.findById(buyerId);
+        const seller = await User.findById(sellerId) || await Famous.findById(sellerId);
         const property = await Property.findById(propertyId);
 
         if (!buyer || !seller || !property) {
@@ -246,7 +253,12 @@ router.post("/buyProperty/:propertyId", async (req, res) => {
             return res.status(404).send("Propiedad no encontrada");
         }
 
-        const buyer = await User.findById(buyerId);
+        // Buscar comprador tanto en usuarios como en famosos
+        let buyer = await User.findById(buyerId);
+        if (!buyer) {
+            buyer = await Famous.findById(buyerId);
+        }
+
         if (!buyer) {
             return res.status(404).send("Comprador no encontrado");
         }
@@ -289,8 +301,6 @@ router.post("/buyProperty/:propertyId", async (req, res) => {
     }
 });
 
-
-
 // Ruta para mostrar el dashboard
 router.get("/dashboard", async (req, res) => {
     try {
@@ -310,7 +320,15 @@ router.get("/dashboard", async (req, res) => {
 });
 
 
-
+// Mostrar el inventario de bienes por famoso
+router.get("/famousInventory", async (req, res) => {
+    try {
+        const famousList = await Famous.find().populate('properties');
+        res.render("famousInventory", { famousList });
+    } catch (error) {
+        console.error("Error fetching famous inventory:", error);
+        res.status(500).send("Error al obtener el inventario de famosos");
+    }
+});
 
 module.exports = router;
-
