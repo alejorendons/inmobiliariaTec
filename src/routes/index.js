@@ -51,7 +51,7 @@ router.get("/properties", async (req, res) => {
     try {
         const properties = await Property.find().populate('owner');
         const users = await User.find(); // Obtener todos los usuarios
-        const famous = await Famous.find();
+        const famous = await Famous.find()
 
         res.render("properties", { properties, users, famous });
     } catch (error) {
@@ -146,16 +146,18 @@ router.post("/login", async (req, res) => {
 });
 
 // Mostrar el formulario de agregar propiedad
+// Mostrar el formulario de agregar propiedad
 router.get("/addProperty", async (req, res) => {
     try {
-        const users = await User.find();
-        const famous = await Famous.find();
+        const users = await User.find(); // Obtener todos los usuarios
+        const famous = await Famous.find(); // Obtener todos los famosos
         res.render("addProperty", { users, famous }); // Pasar los usuarios y famosos a la vista
     } catch (error) {
         console.error("Error fetching users and famous people:", error);
         res.status(500).send("Error al obtener los usuarios y famosos");
     }
 });
+
 
 // Agregar propiedad
 router.post("/addProperty", async (req, res) => {
@@ -183,7 +185,7 @@ router.post("/addProperty", async (req, res) => {
             },
             description,
             estimatedPrice,
-            owner: new mongoose.Types.ObjectId(ownerId) // Asegurarse de que ownerId sea un ObjectId
+            owner: mongoose.Types.ObjectId(ownerId) // Asegurarse de que ownerId sea un ObjectId
         });
         await property.save();
         res.redirect("/properties");
@@ -198,8 +200,8 @@ router.post("/newTransaction", async (req, res) => {
     try {
         const { type, propertyId, salePrice, buyerId, sellerId, bankId, currency, hasPenalty } = req.body;
 
-        const buyer = await User.findById(buyerId) || await Famous.findById(buyerId);
-        const seller = await User.findById(sellerId) || await Famous.findById(sellerId);
+        const buyer = await User.findById(buyerId);
+        const seller = await User.findById(sellerId);
         const property = await Property.findById(propertyId);
 
         if (!buyer || !seller || !property) {
@@ -319,8 +321,7 @@ router.get("/dashboard", async (req, res) => {
     }
 });
 
-
-// Mostrar el inventario de bienes por famoso
+// Ruta para mostrar el inventario de famosos
 router.get("/famousInventory", async (req, res) => {
     try {
         const famousList = await Famous.find().populate('properties');
@@ -328,6 +329,170 @@ router.get("/famousInventory", async (req, res) => {
     } catch (error) {
         console.error("Error fetching famous inventory:", error);
         res.status(500).send("Error al obtener el inventario de famosos");
+    }
+});
+
+// Ruta para mostrar los informes
+router.get("/reports", async (req, res) => {
+    try {
+        const famousList = await Famous.find();
+        res.render("reports", { famousList });
+    } catch (error) {
+        console.error("Error fetching famous list:", error);
+        res.status(500).send("Error al obtener la lista de famosos");
+    }
+});
+
+// Generar informe de ventas
+router.post("/report/sales", async (req, res) => {
+    const { startDate, endDate, famousId } = req.body;
+    try {
+        const query = {
+            type: 'Venta directa',
+            createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        };
+        if (famousId) {
+            query.$or = [{ buyer: famousId }, { seller: famousId }];
+        }
+        const sales = await Transaction.find(query).populate('property buyer seller');
+        res.render("reportSales", { sales });
+    } catch (error) {
+        console.error("Error generating sales report:", error);
+        res.status(500).send("Error al generar el informe de ventas");
+    }
+});
+
+// Generar informe de compra ventas
+router.post("/report/transactions", async (req, res) => {
+    const { startDate, endDate, famousId } = req.body;
+    try {
+        const query = {
+            createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        };
+        if (famousId) {
+            query.$or = [{ buyer: famousId }, { seller: famousId }];
+        }
+        const transactions = await Transaction.find(query).populate('property buyer seller');
+        res.render("reportTransactions", { transactions });
+    } catch (error) {
+        console.error("Error generating transactions report:", error);
+        res.status(500).send("Error al generar el informe de compra ventas");
+    }
+});
+
+// Generar informe de comisiones
+router.post("/report/commissions", async (req, res) => {
+    const { startDate, endDate } = req.body;
+    try {
+        const commissions = await Transaction.aggregate([
+            { $match: { createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) } } },
+            { $group: { _id: null, totalCommissions: { $sum: "$commission" } } }
+        ]);
+        res.render("reportCommissions", { commissions: commissions[0] });
+    } catch (error) {
+        console.error("Error generating commissions report:", error);
+        res.status(500).send("Error al generar el informe de comisiones");
+    }
+});
+
+// Generar informe de multas
+router.post("/report/fines", async (req, res) => {
+    const { startDate, endDate } = req.body;
+    try {
+        const fines = await Transaction.aggregate([
+            { $match: { createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) } } },
+            { $group: { _id: null, totalFines: { $sum: "$fines" } } }
+        ]);
+        res.render("reportFines", { fines: fines[0] });
+    } catch (error) {
+        console.error("Error generating fines report:", error);
+        res.status(500).send("Error al generar el informe de multas");
+    }
+});
+
+// Generar informe de impuestos
+router.post("/report/taxes", async (req, res) => {
+    const { startDate, endDate } = req.body;
+    try {
+        const taxes = await Transaction.aggregate([
+            { $match: { createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) } } },
+            { $group: { _id: "$property.location.country", totalTaxes: { $sum: "$taxes" } } }
+        ]);
+        res.render("reportTaxes", { taxes });
+    } catch (error) {
+        console.error("Error generating taxes report:", error);
+        res.status(500).send("Error al generar el informe de impuestos");
+    }
+});
+
+router.get('/reportSales', async (req, res) => {
+    try {
+        const transactions = await Transaction.find()
+            .populate('property', 'location.address')
+            .populate('buyer', 'username')
+            .populate('seller', 'username');
+        
+        res.render('reportSales', { transactions });
+    } catch (error) {
+        console.error('Error generating sales report:', error);
+        res.status(500).send('Error generating sales report');
+    }
+});
+
+router.get('/reportTransactions', async (req, res) => {
+    try {
+        const transactions = await Transaction.find()
+            .populate('property', 'location.address')
+            .populate('buyer', 'username')
+            .populate('seller', 'username');
+        
+        res.render('reportTransactions', { transactions });
+    } catch (error) {
+        console.error('Error generating transactions report:', error);
+        res.status(500).send('Error generating transactions report');
+    }
+});
+
+
+router.get('/reportCommissions', async (req, res) => {
+    try {
+        const transactions = await Transaction.find()
+            .populate('property', 'location.address')
+            .populate('buyer', 'username')
+            .populate('seller', 'username');
+        
+        res.render('reportCommissions', { transactions });
+    } catch (error) {
+        console.error('Error generating commissions report:', error);
+        res.status(500).send('Error generating commissions report');
+    }
+});
+
+router.get('/reportFines', async (req, res) => {
+    try {
+        const transactions = await Transaction.find()
+            .populate('property', 'location.address')
+            .populate('buyer', 'username')
+            .populate('seller', 'username');
+        
+        res.render('reportFines', { transactions });
+    } catch (error) {
+        console.error('Error generating fines report:', error);
+        res.status(500).send('Error generating fines report');
+    }
+});
+
+router.get('/reportTaxes', async (req, res) => {
+    try {
+        const transactions = await Transaction.find()
+            .populate('property', 'location.address location.country')
+            .populate('buyer', 'username')
+            .populate('seller', 'username');
+        
+        res.render('reportTaxes', { transactions });
+    } catch (error) {
+        console.error('Error generating taxes report:', error);
+        res.status(500).send('Error generating taxes report');
     }
 });
 

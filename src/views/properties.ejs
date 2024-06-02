@@ -1,6 +1,6 @@
 <%- include('partials/_headers') %>
 <div class="container">
-    <h2>Propiedades</h2>
+    <h2 class="text-center m-3">Propiedades</h2>
     <div class="row">
         <% properties.forEach(property => { %>
             <div class="col-md-4">
@@ -11,7 +11,7 @@
                         <p class="card-text"><strong>País:</strong> <%= property.location.country %></p>
                         <p class="card-text"><strong>Descripción:</strong> <%= property.description %></p>
                         <p class="card-text"><strong>Precio Estimado:</strong> $<%= property.estimatedPrice %></p>
-                        <p class="card-text"><strong>Propietario:</strong> <%= property.owner ? property.owner.name : 'N/A' %></p>
+                        <p class="card-text"><strong>Propietario:</strong> <%= property.owner ? (property.ownerType === 'User' ? property.owner.username : property.owner.name) : 'N/A' %></p>
                         <% if (property.forSale) { %>
                             <form action="/buyProperty/<%= property._id %>" method="post">
                                 <div class="form-group">

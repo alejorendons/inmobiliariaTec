@@ -1,0 +1,21 @@
+<%- include('partials/_headers') %>
+<div class="container">
+    <h2>Informe de Impuestos por País</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>País</th>
+                <th>Total Impuestos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% taxes.forEach(tax => { %>
+                <tr>
+                    <td><%= tax._id %></td>
+                    <td>$<%= tax.totalTaxes %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+<%- include('partials/_footer') %>

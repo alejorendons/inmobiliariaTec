@@ -1,12 +1,12 @@
 <%- include('partials/_headers') %>
 <div class="container">
-    <h2>Inventario de Famosos</h2>
+    <h2 class="text-center">Inventario de Famosos</h2>
     <div class="row">
         <% famousList.forEach(famous => { %>
             <div class="col-md-4">
                 <div class="card mb-4">
+                    <div class="card-header"><%= famous.name %></div>
                     <div class="card-body">
-                        <h5 class="card-title"><%= famous.name %></h5>
                         <p class="card-text"><strong>Nacionalidad:</strong> <%= famous.nationality %></p>
                         <p class="card-text"><strong>Fecha de Nacimiento:</strong> <%= famous.birthDate ? famous.birthDate.toDateString() : 'N/A' %></p>
                         <h6 class="mt-3">Propiedades:</h6>

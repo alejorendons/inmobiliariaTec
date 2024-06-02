@@ -1,13 +1,13 @@
 <%- include('partials/_headers') %>
 <div class="container">
-    <h2>Dashboard</h2>
+    <h2 class="text-center">Dashboard</h2>
     <div class="row">
         <div class="col-md-12">
             <h3>Propiedades</h3>
             <% properties.forEach(property => { %>
                 <div class="card mb-4">
+                    <div class="card-header"><%= property.type %> en <%= property.location.city %></div>
                     <div class="card-body">
-                        <h5 class="card-title"><%= property.type %> en <%= property.location.city %></h5>
                         <p class="card-text"><strong>Dirección:</strong> <%= property.location.address %></p>
                         <p class="card-text"><strong>País:</strong> <%= property.location.country %></p>
                         <p class="card-text"><strong>Descripción:</strong> <%= property.description %></p>
@@ -22,8 +22,8 @@
             <h3>Transacciones</h3>
             <% transactions.forEach(transaction => { %>
                 <div class="card mb-4">
+                    <div class="card-header">Transacción <%= transaction._id %></div>
                     <div class="card-body">
-                        <h5 class="card-title">Transacción <%= transaction._id %></h5>
                         <p class="card-text"><strong>Propiedad:</strong> <%= transaction.property.location.address %>, <%= transaction.property.location.city %>, <%= transaction.property.location.country %></p>
                         <p class="card-text"><strong>Comprador:</strong> <%= transaction.buyer ? transaction.buyer.username : 'N/A' %></p>
                         <p class="card-text"><strong>Vendedor:</strong> <%= transaction.seller ? transaction.seller.username : 'N/A' %></p>

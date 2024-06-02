@@ -18,7 +18,7 @@ const userSchema = new Schema({
 
 // Esquema para Propiedades
 const propertySchema = new Schema({
-  type: { type: String, required: true }, // Casa, Apartamento, Estudio, Terreno
+  type: { type: String, required: true },
   location: { 
       address: { type: String, required: true },
       city: { type: String, required: true },
@@ -26,9 +26,12 @@ const propertySchema = new Schema({
   },
   description: { type: String },
   estimatedPrice: { type: Number, required: true },
-  owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  owner: { type: Schema.Types.ObjectId, refPath: 'ownerType' },
+  ownerType: { type: String, required: true, enum: ['User', 'Famous'] },
   forSale: { type: Boolean, default: true }
 });
+
+
 
 // Esquema para Transacciones
 const transactionSchema = new Schema({
@@ -36,13 +39,15 @@ const transactionSchema = new Schema({
   property: { type: Schema.Types.ObjectId, ref: 'Property', required: true },
   date: { type: Date, default: Date.now },
   salePrice: { type: Number, required: true },
-  buyer: { type: Schema.Types.ObjectId, ref: 'User' },
-  seller: { type: Schema.Types.ObjectId, ref: 'User' },
-  bankId: { type: Schema.Types.ObjectId, ref: 'Bank' }, // Referencia a Bancos
-  currency: { type: String, enum: ['EUR', 'USD', 'COP'], required: true },
-  commission: { type: Number, required: true },
-  taxes: { type: Number, required: true },
-  fines: { type: Number, default: 0 }
+  buyer: { type: Schema.Types.ObjectId, refPath: 'buyerType' },
+  seller: { type: Schema.Types.ObjectId, refPath: 'sellerType' },
+  bankId: { type: Schema.Types.ObjectId, ref: 'Bank' },
+  currency: { type: String, required: true },
+  commission: { type: Number },
+  taxes: { type: Number },
+  fines: { type: Number },
+  buyerType: { type: String, required: true, enum: ['User', 'Famous'] },
+  sellerType: { type: String, required: true, enum: ['User', 'Famous'] }
 });
 
 

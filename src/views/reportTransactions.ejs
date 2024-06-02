@@ -1,0 +1,28 @@
+<%- include('partials/_headers') %>
+<div class="container">
+    <h2>Informe de Transacciones</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Propiedad</th>
+                <th>Comprador</th>
+                <th>Vendedor</th>
+                <th>Fecha</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% transactions.forEach(transaction => { %>
+                <tr>
+                    <td><%= transaction.property.location.address %></td>
+                    <td><%= transaction.buyer.username || transaction.buyer.name %></td>
+                    <td><%= transaction.seller.username || transaction.seller.name %></td>
+                    <td><%= transaction.date.toDateString() %></td>
+                    <td><%= transaction.salePrice %> <%= transaction.currency %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+<%- include('partials/_footer') %>
+

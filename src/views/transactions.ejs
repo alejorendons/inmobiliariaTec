@@ -1,6 +1,33 @@
 <%- include('partials/_headers') %>
-<div class="container">
-    <h2>Transacciones</h2>
+<div class="container d-flex justify-content-center">
+
+    <div class="card">
+        <div class="card-header"><h2 class="text-center">Transacciones</h2></div>
+        <div class="card-body">
+            <div class="row">
+                <% transactions.forEach(transaction => { %>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header">Transacción: <%= transaction._id %></div>
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Detalles de la Transacción</h6>
+                                <p class="card-text"><strong>Propiedad:</strong> <%= transaction.property.location.address %>, <%= transaction.property.location.city %>, <%= transaction.property.location.country %></p>
+                                <p class="card-text"><strong>Comprador:</strong> <%= transaction.buyer ? transaction.buyer.username : 'N/A' %></p>
+                                <p class="card-text"><strong>Vendedor:</strong> <%= transaction.seller ? transaction.seller.username : 'N/A' %></p>
+                                <% if (transaction.bankId) { %>
+                                    <p class="card-text"><strong>Banco:</strong> <%= transaction.bankId.name %></p>
+                                <% } %>
+                                <p class="card-text"><strong>Comisión:</strong> $<%= transaction.commission %></p>
+                                <p class="card-text"><strong>Impuestos:</strong> $<%= transaction.taxes %></p>
+                                <p class="card-text"><strong>Multa:</strong> $<%= transaction.fines %></p>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+      </div>   
+    <!-- <h2 class="text-center">Transacciones</h2>
     <div class="row">
         <% transactions.forEach(transaction => { %>
             <div class="col-md-4">
@@ -21,7 +48,7 @@
                 </div>
             </div>
         <% }) %>
-    </div>
+    </div> -->
 </div>
 <%- include('partials/_footer') %>
 
